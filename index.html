@@ -1,0 +1,212 @@
+""<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <title>WEB LAB1</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=Array.from,Promise,Symbol,Object.setPrototypeOf,Object.getOwnPropertySymbols"></script>
+<script src="https://cdn.jsdelivr.net/npm/superagent"></script>
+  </head>
+<body>
+<script>
+function pressEnter(form) {
+  validate(form);
+}
+
+  function isNumeric(value) {
+    if( /[a-zA-Z]+/.test(value) || value == ""){
+      return -100
+    }else{
+      return value
+    }
+  }
+  function validate(form) {
+    var elem = form.y;
+    if ( isNumeric(elem.value) < (-5)  ||  isNumeric(elem.value) > 5){
+      if (elem.className != 'error') {
+        elem.className = 'error';
+        var msgElem = document.createElement('span');
+        msgElem.className = "error-message";
+        msgElem.innerHTML = "Y должен быть от -5 до 5 и состоять только из цифр";
+        elem.parentNode.appendChild(msgElem);
+      }
+    } else {
+      elem.className = 'field';
+      if (elem.parentNode.lastChild.className == "error-message") {
+        elem.parentNode.removeChild(elem.parentNode.lastChild);
+      }
+      superagent
+      .get('main.php')
+      .type('json')
+      .query('x='+form.x.value)
+      .query('y='+elem.value)
+      .query('z='+form.z.value)
+      .end(function (err, res) {
+        console.log(res);
+        let ans = JSON.parse(res.text);
+        console.log(ans);
+        var row = document.createElement("tr");
+
+        var x = document.createElement("TD");
+        var y = document.createElement("TD");
+        var r = document.createElement("TD");
+        var res = document.createElement("TD");
+        var bm = document.createElement("TD");
+        var time = document.createElement("TD");
+
+
+        x.innerHTML = ans.x;
+        y.appendChild (document.createTextNode(ans.y));
+        r.appendChild (document.createTextNode(ans.R));
+        res.appendChild (document.createTextNode(ans.res));
+        bm.appendChild (document.createTextNode(ans.bancmark));
+        time.appendChild (document.createTextNode(ans.time));
+
+
+
+        row.appendChild(x);
+        row.appendChild(y);
+        row.appendChild(r);
+        row.appendChild(res);
+        row.appendChild(bm);
+        row.appendChild(time);
+
+        document.getElementsByName("result")[0].appendChild(row);
+        if(ans.res == "yes"){
+          row.className = "resYes";
+        } else {
+          row.className = "resNo";
+        }
+
+        // Calling the end function will send the request
+      });
+    }
+  }
+
+</script>
+<table width="100%" cellspacing="0">
+
+<tr class="header">
+  <td align="left" >
+    <h2 class="left-text">Вариант: 212011</h2>
+  </td>
+  <td align="right">
+    <h2 class="right-text">Колоколов Артём Михайлович, P3212</h2>
+  </td>
+</tr>
+
+<tr >
+  <td >
+    <form class="forms" id="form" onsubmit="pressEnter(this);return false">
+      <table cellspacing="5px">
+
+        <tr>
+          <th colspan="2">
+          <ul class="flex-row">
+             <li>X:</li>
+             <li>-4<br><input type="radio" name="x" value="-4"></li>
+             <li>-3<br><input type="radio" name="x" value="-3"></li>
+             <li>-2<br><input type="radio" name="x" value="-2"></li>
+             <li>-1<br><input type="radio" name="x" value="-1"></li>
+             <li>-0<br><input type="radio" name="x" value="0" checked></li>
+             <li>1<br><input type="radio"  name="x" value="1"></li>
+             <li>2<br><input type="radio"  name="x" value="2"></li>
+             <li>3<br><input type="radio"  name="x" value="3"></li>
+             <li>4<br><input type="radio"  name="x" value="4"></li>
+          </ul>
+
+        </th>
+
+        </tr>
+
+        <tr>
+          <th>Y:</th>
+          <th><input class="field" type="text" name="y" /></th>
+        </tr>
+
+        <tr>
+          <th>R:</th>
+          <th align="left">
+            <select class="field" name="z">
+              <option value="1">1</option>
+              <option value="1.5">1.5</option>
+              <option selected value="2">2</option>
+              <option value="2.5">2.5</option>
+              <option value="3">3</option>
+            </select>
+          </th>
+        </tr>
+
+        <tr>
+          <th  align="left" colspan="2"><button id="button" type="button" onclick="validate(this.form)">Send</th>
+        </tr>
+      </table>
+    </form>
+  </td>
+
+
+  <td align="right">
+    <svg class="picture" width="300" height="300" >
+
+      <line x1="0" y1="150" x2="300" y2="150" stroke="black" stroke-width="1" />
+      <line x1="150" y1="0" x2="150" y2="300" stroke="black" stroke-width="1" />
+
+      <polygon points="145,5 150,0 155,5" fill="black" stroke="blakc" stroke-width="1" />
+      <polygon points="295,145 300,150 295,155" fill="blakc" stroke="black" stroke-width="1" />
+
+
+      <text x="155" y="10" fill="black">Y</text>
+      <text x="285" y="170" fill="black">X</text>
+
+      <line  x1="200" x2="200" y1="155" y2="145" stroke="black" />
+      <line  x1="250" x2="250" y1="155" y2="145" stroke="black" />
+
+      <line  x1="50"  x2="50"  y1="155" y2="145" stroke="black"/>
+      <line  x1="100" x2="100" y1="155" y2="145" stroke="black"/>
+
+      <line  x1="145" x2="155" y1="100" y2="100" stroke="black"/>
+      <line  x1="145" x2="155" y1="50"  y2="50"  stroke="black"/>
+
+      <line  x1="145" x2="155" y1="200" y2="200" stroke="black"/>
+      <line  x1="145" x2="155" y1="250" y2="250" stroke="black"/>
+
+      <text  x="195" y="140">R/2</text>
+      <text  x="248" y="140">R</text>
+
+      <text  x="40" y="140">-R</text>
+      <text  x="90" y="140">-R/2</text>
+
+      <text  x="160" y="105">R/2</text>
+      <text  x="160"  y="55">R</text>
+
+      <text  x="160" y="205">-R/2</text>
+      <text  x="160" y="255">-R</text>
+
+
+      <rect class="figure" x="50" y="150" width="100" height="100" fill-opacity="0.25" fill="skyblue" stroke="steelblue" stroke-width="1"/>
+      <polygon points="250,150 150,150 150,250" class="figure" fill-opacity="0.25" fill="skyblue" stroke="steelblue" stroke-width="1"/>
+        <path  d="M 50 150 A 100 100, 0, 0, 1, 150 50 L 150 150" class="figure" fill-opacity="0.25" fill="skyblue" stroke="steelblue" stroke-width="1"/>
+    </svg>
+  </td>
+</tr>
+
+
+
+<tr>
+  <td colspan="2" align="center">
+    <table cellspacing="0" class="result" name="result">
+      <tr class="table-header">
+        <th >X</th>
+        <th >Y</th>
+        <th >R</th>
+        <th >Result</th>
+        <th>Bancmark</th>
+        <th >Time</th>
+      </tr>
+
+    </table>
+  </td>
+</tr>
+</table>
+</body>
+</html>
