@@ -1,4 +1,51 @@
 <?php
+function array_to_json( $array ){
+
+  if( !is_array( $array ) ){
+    return false;
+  }
+
+  $associative = count( array_diff( array_keys($array), array_keys( array_keys( $array )) ));
+  if( $associative ){
+
+    $construct = array();
+    foreach( $array as $key => $value ){
+
+      if( is_numeric($key) ){
+        $key = "key_$key";
+      }
+      $key = '"'.addslashes($key).'"';
+
+      if( is_array( $value )){
+        $value = array_to_json( $value );
+      } else if( !is_numeric( $value ) || is_string( $value ) ){
+        $value = '"'.addslashes($value).'"';
+      }
+
+      $construct[] = "$key: $value";
+    }
+
+    $result = "{ " . implode( ", ", $construct ) . " }";
+
+  } else {
+
+    $construct = array();
+    foreach( $array as $value ){
+
+      if( is_array( $value )){
+        $value = array_to_json( $value );
+      } else if( !is_numeric( $value ) || is_string( $value ) ){
+        $value = '"'.addslashes($value).'"';
+      }
+
+      $construct[] = $value;
+    }
+
+    $result = "[ " . implode( ", ", $construct ) . " ]";
+  }
+
+  return $result;
+}
 
 $start = microtime(true);
 $ajaxRequest = $_GET;
@@ -21,19 +68,8 @@ $output = array(
   "R" => $z,
   "res" => $res,
   "time" => date("d.m.Y H:i"),
-  "bancmark" => round(microtime(true) - $start, 5),
+  "benchmark" => round(microtime(true) - $start, 5),
 );
-//echo json_encode($output);
 
-$time = date("d.m.Y H:i");
-$bancmark = round(microtime(true) - $start, 5);
 
-echo "{";
-echo "'x':$x,";
-echo "'y':$y,";
-echo "'R':$z,";
-echo "'time': '"$time"',";
-echo "'bancmark':$bancmark";
-echo "}";
-
-?>
+  echo array_to_json($output);
